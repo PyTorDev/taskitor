@@ -1,6 +1,10 @@
 from task import Task
 from storage import load_tasks, save_tasks
 from datetime import datetime
+from rich.console import Console
+from rich.table import Table
+
+console = Console()
 
 
 def add_task(description):
@@ -15,7 +19,7 @@ def add_task(description):
     tasks.append(new_task)
     save_tasks(tasks)
 
-    print(f"Task added successfully (ID: {id})")
+    console.print(f"Task added successfully (ID: {id})", style="bold bright_cyan")
 
 def delete_task(id: int):
     tasks = load_tasks()
@@ -28,9 +32,9 @@ def delete_task(id: int):
     if task_to_rid:
         tasks.remove(task_to_rid)
         save_tasks(tasks)
-        print(f"Task with ID: {id} deleted successfully")
+        console.print(f"Task with ID: {id} deleted successfully", style="bold bright_cyan")
     else:
-        print(f"Task with ID: {id} not found")
+        console.print(f"Task with ID: {id} not found", style="bold bright_red")
 
 def update_task(id: int, description: str):
     tasks = load_tasks()
@@ -44,9 +48,9 @@ def update_task(id: int, description: str):
         task_to_update.description = description
         task_to_update.updated_at = datetime.now().isoformat()
         save_tasks(tasks)
-        print(f"Task with ID: {id} updated successfully")
+        console.print(f"Task with ID: {id} updated successfully", style="bold bright_cyan")
     else:
-        print(f"Task with ID: {id} not found")
+        console.print(f"Task with ID: {id} not found", style="bold bright_red")
 
 def change_status(id: int, status: str):
     if status in [Task.STATUS_TODO, Task.STATUS_IN_PROGRESS, Task.STATUS_DONE]:
@@ -62,29 +66,59 @@ def change_status(id: int, status: str):
             task_to_update.status = status
             task_to_update.updated_at = datetime.now().isoformat()
             save_tasks(tasks)
-            print(f"Task with ID: {id} marked as {status} successfully")
+            console.print(
+                f"Task with ID: {id} marked as {status} successfully",
+                style="bold bright_cyan",
+            )
         else:
-            print(f"Task with ID: {id} not found")
+            console.print(f"Task with ID: {id} not found", style="bold bright_red")
 
     else:
-        print(f"Invalid status: {status}. Valid statuses are: To Do, In Progress, Done")
+        console.print(
+            f"Invalid status: {status}. Valid statuses are: To Do, In Progress, Done",
+            style="bold bright_red",
+        )
 
-def list_tasks(status:str = None):
+def list_tasks(status: str | None = None):
     tasks = load_tasks()
 
     if status and status not in [Task.STATUS_TODO, Task.STATUS_IN_PROGRESS, Task.STATUS_DONE]:
-        print(f"Invalid status: {status}. Valid statuses are: To Do, In Progress, Done")
+        console.print(
+            f"Invalid status: {status}. Valid statuses are: To Do, In Progress, Done",
+            style="bold bright_red",
+        )
         return
 
     if status:
         tasks = [t for t in tasks if t.status == status]
-        print(f"Tasks with status '{status}':")
+        console.print(f"Tasks with status '{status}':", style="bold bright_magenta")
     else:
-        print("All tasks:")
+        console.print("All tasks:", style="bold bright_magenta")
 
     if not tasks:
-        print("No tasks found.")
+        console.print("No tasks found.", style="bright_yellow")
         return
 
+    table = Table(show_header=True, header_style="bold bright_blue")
+    table.add_column("ID", style="bright_white")
+    table.add_column("Description", style="bright_white")
+    table.add_column("Status", style="bright_white")
+    table.add_column("Created", style="bright_white")
+    table.add_column("Updated", style="bright_white")
+
+    status_colors = {
+        Task.STATUS_TODO: "bright_magenta",
+        Task.STATUS_IN_PROGRESS: "bright_yellow",
+        Task.STATUS_DONE: "bright_green",
+    }
+
     for t in tasks:
-        print(f"[{t.id}] {t.description} — {t.status}")
+        table.add_row(
+            str(t.id),
+            t.description,
+            f"[{status_colors.get(t.status, 'white')}]" + t.status + "[/]",
+            t.created_at.split("T")[0],
+            t.updated_at.split("T")[0],
+        )
+
+    console.print(table)
