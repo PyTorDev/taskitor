@@ -3,3 +3,5 @@ __pycache__/
 build/
 taskitor.egg-info/
 setup.py
+MANIFEST.in
+pyproject.toml
