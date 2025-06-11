@@ -1,6 +1,6 @@
 import json
 import os
-from task import Task
+from taskitor.task import Task
 
 FILE_PATH = "tasks.json"
 

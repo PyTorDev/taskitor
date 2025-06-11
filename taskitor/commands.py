@@ -1,5 +1,5 @@
-from task import Task
-from storage import load_tasks, save_tasks
+from taskitor.task import Task
+from taskitor.storage import load_tasks, save_tasks
 from datetime import datetime
 from rich.console import Console
 from rich.table import Table

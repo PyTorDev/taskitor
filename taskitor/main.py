@@ -1,5 +1,5 @@
 import sys
-from commands import (
+from taskitor.commands import (
     add_task,
     delete_task,
     update_task,

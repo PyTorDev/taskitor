@@ -1,10 +1,10 @@
 import unittest
 from io import StringIO
 from contextlib import redirect_stdout
-from commands import add_task, delete_task, update_task, change_status, list_tasks
-import storage
-from storage import load_tasks, save_tasks
-from task import Task
+from taskitor.commands import add_task, delete_task, update_task, change_status, list_tasks
+import taskitor.storage as storage
+from taskitor.storage import load_tasks, save_tasks
+from taskitor.task import Task
 
 class TestTaskCommands(unittest.TestCase):
     def setUp(self):
