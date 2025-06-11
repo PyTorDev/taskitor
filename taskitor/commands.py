@@ -4,7 +4,22 @@ from datetime import datetime
 from rich.console import Console
 from rich.table import Table
 
-console = Console()
+console = Console(highlight=False)
+
+
+def normalize_status(status: str) -> str | None:
+    """Return the canonical status name regardless of input case.
+
+    Accepts both new hyphenated status names and legacy names with spaces.
+    """
+    status_map = {
+        Task.STATUS_TODO.lower(): Task.STATUS_TODO,
+        Task.STATUS_IN_PROGRESS.lower(): Task.STATUS_IN_PROGRESS,
+        Task.STATUS_DONE.lower(): Task.STATUS_DONE,
+        "to do": Task.STATUS_TODO,
+        "in progress": Task.STATUS_IN_PROGRESS,
+    }
+    return status_map.get(status.lower())
 
 
 def add_task(description):
@@ -53,7 +68,8 @@ def update_task(id: int, description: str):
         console.print(f"Task with ID: {id} not found", style="bold bright_red")
 
 def change_status(id: int, status: str):
-    if status in [Task.STATUS_TODO, Task.STATUS_IN_PROGRESS, Task.STATUS_DONE]:
+    status_normalized = normalize_status(status)
+    if status_normalized:
 
         tasks = load_tasks()
         task_to_update = None
@@ -63,11 +79,11 @@ def change_status(id: int, status: str):
                 task_to_update = t
 
         if task_to_update:
-            task_to_update.status = status
+            task_to_update.status = status_normalized
             task_to_update.updated_at = datetime.now().isoformat()
             save_tasks(tasks)
             console.print(
-                f"Task with ID: {id} marked as {status} successfully",
+                f"Task with ID: {id} marked as {status_normalized} successfully",
                 style="bold bright_cyan",
             )
         else:
@@ -75,23 +91,28 @@ def change_status(id: int, status: str):
 
     else:
         console.print(
-            f"Invalid status: {status}. Valid statuses are: To Do, In Progress, Done",
+            f"Invalid status: {status}. Valid statuses are: to-do, in-progress, done",
             style="bold bright_red",
         )
 
 def list_tasks(status: str | None = None):
     tasks = load_tasks()
 
-    if status and status not in [Task.STATUS_TODO, Task.STATUS_IN_PROGRESS, Task.STATUS_DONE]:
+    status_normalized = normalize_status(status) if status else None
+
+    if status and not status_normalized:
         console.print(
-            f"Invalid status: {status}. Valid statuses are: To Do, In Progress, Done",
+            f"Invalid status: {status}. Valid statuses are: to-do, in-progress, done",
             style="bold bright_red",
         )
         return
 
-    if status:
-        tasks = [t for t in tasks if t.status == status]
-        console.print(f"Tasks with status '{status}':", style="bold bright_magenta")
+    if status_normalized:
+        tasks = [t for t in tasks if t.status == status_normalized]
+        console.print(
+            f"Tasks with status '{status_normalized}':",
+            style="bold bright_magenta",
+        )
     else:
         console.print("All tasks:", style="bold bright_magenta")
 
@@ -122,3 +143,4 @@ def list_tasks(status: str | None = None):
         )
 
     console.print(table)
+

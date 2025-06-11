@@ -16,7 +16,7 @@ def main():
         )
         return
     
-    command = sys.argv[1]
+    command = sys.argv[1].lower()
 
     if command == "add":
         if len(sys.argv) < 3:

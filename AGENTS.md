@@ -2,7 +2,7 @@
 
 ## Overview
 
-Taskitor is a command-line application written in Python that allows users to manage their tasks through simple CLI commands. Tasks are stored in a local JSON file and can have three possible statuses: "To Do", "In Progress", and "Done".
+Taskitor is a command-line application written in Python that allows users to manage their tasks through simple CLI commands. Tasks are stored in a local JSON file and can have three possible statuses: "to-do", "in-progress", and "done".
 
 The goal is to enhance the visual appearance of the CLI output using the `rich` library, making the interface more readable and user-friendly.
 

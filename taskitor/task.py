@@ -3,16 +3,16 @@ from datetime import datetime
 
 
 class Task:
-    def __init__(self, id, description, status="To Do", created_at=None, updated_at=None):
+    def __init__(self, id, description, status="to-do", created_at=None, updated_at=None):
         self.id = id
         self.description = description
         self.status = status
         self.created_at = created_at or datetime.now().isoformat()
         self.updated_at = updated_at or self.created_at
 
-    STATUS_TODO = "To Do"
-    STATUS_IN_PROGRESS = "In Progress"
-    STATUS_DONE = "Done"
+    STATUS_TODO = "to-do"
+    STATUS_IN_PROGRESS = "in-progress"
+    STATUS_DONE = "done"
 
     def to_dict(self):
         return {
